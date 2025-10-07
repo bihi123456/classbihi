@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -24,11 +24,7 @@ export default function AttendanceScreen() {
   
   const studentUser = user as StudentUser;
 
-  useEffect(() => {
-    checkAttendanceStatus();
-  }, []);
-
-  const checkAttendanceStatus = async () => {
+  const checkAttendanceStatus = useCallback(async () => {
     try {
       // Check if attendance is active for this section
       const attendanceData = await AsyncStorage.getItem('activeAttendance');
@@ -45,7 +41,11 @@ export default function AttendanceScreen() {
     } catch (error) {
       console.log('Error checking attendance status:', error);
     }
-  };
+  }, [studentUser?.section, studentUser?.id]);
+
+  useEffect(() => {
+    checkAttendanceStatus();
+  }, [checkAttendanceStatus]);
 
   const markAttendance = async () => {
     if (!studentUser || hasMarkedAttendance) return;

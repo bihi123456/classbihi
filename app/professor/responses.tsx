@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -45,11 +45,7 @@ export default function ResponsesScreen() {
   const [selectedExam, setSelectedExam] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       // Load exams published by this professor
       const examsData = await AsyncStorage.getItem('exams');
@@ -66,7 +62,11 @@ export default function ResponsesScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [professorUser.id]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const getResponsesForExam = (examId: string) => {
     return responses.filter(response => response.examId === examId);

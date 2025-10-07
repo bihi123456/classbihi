@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -50,11 +50,7 @@ export default function ProfessorMessagesScreen() {
 
   const SECTIONS = ['LEFR', 'LESM', 'LESVT', 'LEAG', 'LEPS'];
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       // Load messages
       const messagesData = await AsyncStorage.getItem('messages');
@@ -74,7 +70,11 @@ export default function ProfessorMessagesScreen() {
     } catch (error) {
       console.log('Error loading data:', error);
     }
-  };
+  }, [professorUser.id]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const getStudentsInSection = () => {
     return students.filter(student => student.section === selectedSection);

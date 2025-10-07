@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -37,11 +37,7 @@ export default function ExamsScreen() {
   
   const studentUser = user as StudentUser;
 
-  useEffect(() => {
-    loadExams();
-  }, []);
-
-  const loadExams = async () => {
+  const loadExams = useCallback(async () => {
     try {
       const examsData = await AsyncStorage.getItem('publishedExams');
       if (examsData) {
@@ -57,7 +53,11 @@ export default function ExamsScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [studentUser?.section]);
+
+  useEffect(() => {
+    loadExams();
+  }, [loadExams]);
 
   const handleExamPress = (exam: Exam) => {
     Alert.alert(
